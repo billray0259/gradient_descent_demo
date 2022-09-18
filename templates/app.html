@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <!-- Set title to 2D Gradient Descent Demo -->
+    <title>2D Gradient Descent Demo</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
+    <!-- Import main.js -->
+    <!-- <script src='main.js'></script> -->
+    <script src="{{url_for('static', filename='main.js')}}"></script>
+
+    <!-- Setup bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<!-- 
+    This gradient descent demo allows the user to click and drag a point around in the parameter space
+    The x and y coordinates of the point are used as the slope and intercept for a line
+    The user experiments with different points to find the best fit line for the data
+ -->
+
+<body>
+    <!-- Center the content and give the page a title -->
+    <div class="container width=70%">
+        <h1 class="text-center">2D Gradient Descent Demo</h1>
+
+        <!-- create two canvases, one for the parameter space and one for the data space with black backgrounds -->
+        <div class="row">
+            <div class="col">
+                <!-- Give the parameter space a title -->
+                <h3 class="text-center">Parameter Space</h3>
+                <!-- Center the canvas -->
+                <div class="text-center">
+                    <!-- Create the parameter space p5js canvas -->
+                    <div id="parameterSpace">
+                    </div>
+
+                    <!-- Add toggles for "loss" and "gradient" -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="lossToggle">
+                                <label class="form-check-label" for="lossToggle">
+                                    Show Loss Surface
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="gradientToggle">
+                                <label class="form-check-label" for="gradientToggle">
+                                    Show Gradient
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add a dropdown to select the loss function -->
+                    <div class="row">
+                        <div class="col">
+                            <label for="lossFunctionSelect">Loss Function</label>
+                            <select class="form-control" id="lossFunctionSelect">
+                                <option value="mse">Mean Squared Error</option>
+                                <option value="mae">Mean Absolute Error</option>
+                                <option value="huber">Huber Loss</option>
+                            </select>
+                        </div>
+                </div>
+            </div>
+            <div class="col">
+                <!-- Give the data space a title -->
+                <h3 class="text-center">Data Space</h3>
+                <!-- Center the canvas -->
+                <div class="text-center">
+                    <!-- Create the data space p5js canvas -->
+                    <div id="dataSpace">
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Add a reset data button -->
+                        <div class="col">
+                            <button type="button" class="btn btn-primary" id="resetData">Reset Data</button>
+                        </div>
+                        <!-- Add a optimize button -->
+                        <div class="col">
+                            <button type="button" class="btn btn-primary" id="optimize">Optimize</button>
+                        </div>
+                        <!-- Add a clear data button -->
+                        <div class="col">
+                            <button type="button" class="btn btn-primary" id="clearData">Clear Data</button>
+                        </div>
+                    </div>
+                    <!-- Add a slider to control the learning rate -->
+                    <div class="row mt-3">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="learningRate" id="learningRateLabel">Learning Rate: 0.0010</label>
+                                <input type="range" class="custom-range" id="learningRate" min="-4" max="1" step="0.001" value="-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Add a row explaining what this demo is -->
+            <div class="row">
+                <div class="col">
+                    <p>This demo shows how gradient descent works in 2D. The parameter space is on the left and the data space is on the right.
+                        The red line is the current model and the black dots are the data points. The loss surface is the surface of the loss function.
+                        The gradient is the direction of the gradient of the loss function. The loss surface and gradient are only shown when the
+                        corresponding toggle is on. The learning rate slider controls the learning rate of the gradient descent algorithm.
+                        The reset data button resets the data points to their original positions. The optimize button runs the gradient descent algorithm.
+                        The clear data button clears the data points. (written by copilot)</p>
+                </div>
+            </div>
+        </div>
+        
+        
+</body>
+
+</html>
