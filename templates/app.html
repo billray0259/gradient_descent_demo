@@ -25,7 +25,7 @@
 
 <body>
     <!-- Center the content and give the page a title -->
-    <div class="container width=70%">
+    <div class="container">
         <h1 class="text-center">2D Gradient Descent Demo</h1>
 
         <!-- create two canvases, one for the parameter space and one for the data space with black backgrounds -->
@@ -59,15 +59,16 @@
                         </div>
                     </div>
                     <!-- Add a dropdown to select the loss function -->
-                    <div class="row">
+                    <div class="row mt-3">
                         <div class="col">
-                            <label for="lossFunctionSelect">Loss Function</label>
-                            <select class="form-control" id="lossFunctionSelect">
-                                <option value="mse">Mean Squared Error</option>
+                            <label for="lossFunction">Loss Function</label>
+                            <select class="form-control" id="lossFunction">
                                 <option value="mae">Mean Absolute Error</option>
+                                <option value="mse">Mean Squared Error</option>
                                 <option value="huber">Huber Loss</option>
                             </select>
                         </div>
+                    </div>
                 </div>
             </div>
             <div class="col">
@@ -107,12 +108,44 @@
             <!-- Add a row explaining what this demo is -->
             <div class="row">
                 <div class="col">
-                    <p>This demo shows how gradient descent works in 2D. The parameter space is on the left and the data space is on the right.
-                        The red line is the current model and the black dots are the data points. The loss surface is the surface of the loss function.
-                        The gradient is the direction of the gradient of the loss function. The loss surface and gradient are only shown when the
-                        corresponding toggle is on. The learning rate slider controls the learning rate of the gradient descent algorithm.
-                        The reset data button resets the data points to their original positions. The optimize button runs the gradient descent algorithm.
-                        The clear data button clears the data points. (written by copilot)</p>
+                    <h3>What do I do?</h3>
+                    <ol>
+                    <!-- explain what dragging the parameter ball does -->
+                        <li>
+                            Click and drag the ball in the parameter space to change the slope and intercept of the line.
+                            The x-coordinate of the ball controls the slope and the y-coordinate controls the intercept.
+                            Observe how the loss displayed in the top left of the parameter space changes as the line fits the data better or worse.
+                        </li>
+                        <!-- explain what the loss surface heatmap is -->
+                        <li>
+                            Click the "Show Loss Surface" checkbox to display a heatmap of the loss function over the parameter space.
+                            The heatmap shows which locations in the parameter space map to higher/lower loss values.
+                            Imagine the loss as a 3D surface over the parameters where the z-axis is the loss value.
+                            In this case, we are looking down into a bowl shape.
+                        </li>
+                        <!-- explain what the gradient vectors are -->
+                        <li>
+                            Click the "Show Gradient" checkbox to display the gradient vectors at each point in the parameter space.
+                            The gradient vectors point up the slope of the loss surface.
+                            Moving the parameter ball in the opposite direction of the gradient vector (downhill) will decrease the loss, and
+                            optimize the line to fit the data.
+                        </li>
+
+                        <li>
+                            Click the "Optimize" button to start gradient descent.
+                            When the ball finds a good fit, the data will be reset and the process will start over.
+                        </li>
+
+                        <li>
+                            Experiment by adjusting the learning rate and loss function to see how they affect the optimization process.
+                            You may notice that there is a "sweet spot" for the learning rate that is different depending on the loss function.
+                        </li>
+
+                        <li>
+                            Click the "Clear Data" button to clear the data, then click around in the Data Space to add new data points.
+                            Experiment with how different data points affect the loss surface and the gradient vectors.
+                        </li>
+                    </ol>
                 </div>
             </div>
         </div>

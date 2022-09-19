@@ -57,6 +57,22 @@ function meanSquaredError(parameters, data) {
     return error / data.length;
 }
 
+function huberLoss(parameters, data) {
+    let error = 0;
+    for (let i = 0; i < data.length; i++) {
+        const { x, y } = data[i];
+        const diff = parameters.slope * x + parameters.intercept - y;
+        if (Math.abs(diff) < 1) {
+            error += Math.pow(diff, 2);
+        } else {
+            error += 2 * Math.abs(diff) - 1;
+        }
+    }
+    return error / data.length;
+}
+
+let errorFunction = meanAbsoluteError;
+
 function aproxGradient(parameters, data, errorFunction) {
     const epsilon = 0.0001;
     const gradient = {
@@ -81,9 +97,6 @@ function drawArrow(p, base, vec, myColor) {
 }
 
 
-let errorFunction = meanAbsoluteError;
-// let errorFunction = meanSquaredError;
-
 const colorMatrix = [];
 
 const parameterSpaceSketch = (p) => {
@@ -100,6 +113,16 @@ const parameterSpaceSketch = (p) => {
         // lossToggle checkbox value
         const lossToggle = document.getElementById('lossToggle').checked;
         const gradientToggle = document.getElementById('gradientToggle').checked;
+
+        const selectedLossFunction = document.getElementById('lossFunction').value;
+
+        if (selectedLossFunction === 'mae') {
+            errorFunction = meanAbsoluteError;
+        } else if (selectedLossFunction === 'mse') {
+            errorFunction = meanSquaredError;
+        } else if (selectedLossFunction === 'huber') {
+            errorFunction = huberLoss;
+        }
 
         if (lossToggle) {
 
@@ -177,6 +200,19 @@ const parameterSpaceSketch = (p) => {
             const gradient = aproxGradient(parameters, dummyData, errorFunction);
             parameters.slope -= gradient.slope * learningRate;
             parameters.intercept -= gradient.intercept * learningRate;
+            // if the parameters are out of bounds, set them to the bounds
+            if (parameters.slope < minParameters.slope) {
+                parameters.slope = minParameters.slope;
+            } else if (parameters.slope > maxParameters.slope) {
+                parameters.slope = maxParameters.slope;
+            }
+
+            if (parameters.intercept < minParameters.intercept) {
+                parameters.intercept = minParameters.intercept;
+            } else if (parameters.intercept > maxParameters.intercept) {
+                parameters.intercept = maxParameters.intercept;
+            }
+
             // if the magnitude of the gradient is less than 0.01, reset the data
             if (Math.sqrt(Math.pow(gradient.slope, 2) + Math.pow(gradient.intercept, 2)) < 0.01) {
                 dummyData = initData(p, 100);
