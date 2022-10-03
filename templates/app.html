@@ -63,10 +63,18 @@
                         <div class="col">
                             <label for="lossFunction">Loss Function</label>
                             <select class="form-control" id="lossFunction">
+                                <option value="custom">Custom Loss Function</option>
                                 <option value="mae">Mean Absolute Error</option>
                                 <option value="mse">Mean Squared Error</option>
                                 <option value="huber">Huber Loss</option>
                             </select>
+                        </div>
+                    </div>
+                    <!-- Add a row that lets the user enter a custom loss function -->
+                    <div class="row mt-3">
+                        <div class="col">
+                            <label for="customLossFunction">Custom Loss Function</label>
+                            <input type="text" class="form-control" id="customLossFunction" placeholder="Enter a custom loss function" oninput="updateCustomLossFunction()">
                         </div>
                     </div>
                 </div>
@@ -100,6 +108,15 @@
                             <div class="form-group">
                                 <label for="learningRate" id="learningRateLabel">Learning Rate: 0.0010</label>
                                 <input type="range" class="custom-range" id="learningRate" min="-4" max="1" step="0.001" value="-3">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Allow the user to set the batch size as a percentage of the total data with a range input -->
+                    <div class="row mt-3">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="batchSize" id="batchSizeLabel">Batch Size: 100%</label>
+                                <input type="range" class="custom-range" id="batchSize" min="0" max="100" step="1" value="100">
                             </div>
                         </div>
                     </div>

@@ -38,6 +38,7 @@ function initData(p, nPoints) {
 let optimizing = false;
 
 let learningRate = 0.01;
+let batchSizePercent = 1;
 
 function meanAbsoluteError(parameters, data) {
     let error = 0;
@@ -69,6 +70,30 @@ function huberLoss(parameters, data) {
         }
     }
     return error / data.length;
+}
+
+let customLossFunction = (x, y, f) => 0;
+
+function updateCustomLossFunction() {
+    stringLossFunction = "return " + document.getElementById("customLossFunction").value + ";";
+    customLossFunction = new Function("x", "y", "f", stringLossFunction);
+    console.log(customLossFunction);
+}
+
+function customLoss(parameters, data) {
+    // try {
+    const f = (x) => parameters.slope * x + parameters.intercept;
+    let error = 0;
+    for (let i = 0; i < data.length; i++) {
+        const { x, y } = data[i];
+        // console.log(customLossFunction(x, y, f));
+        error += customLossFunction(x, y, f);
+    }
+    return error / data.length;
+    // } catch (e) {
+    //     console.log(e);
+    //     return 0;
+    // }
 }
 
 let errorFunction = meanAbsoluteError;
@@ -122,6 +147,8 @@ const parameterSpaceSketch = (p) => {
             errorFunction = meanSquaredError;
         } else if (selectedLossFunction === 'huber') {
             errorFunction = huberLoss;
+        } else if (selectedLossFunction === 'custom') {
+            errorFunction = customLoss;
         }
 
         if (lossToggle) {
