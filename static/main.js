@@ -82,6 +82,50 @@ function aproxGradient(parameters, data, errorFunction) {
     return gradient;
 }
 
+let batchSizePercentage = 100;
+
+function minibatchidx(data) {
+    // get batch size percentage from id="batchSize" slider
+    // const batchSizeSlider = document.getElementById("batchSize");
+    // // if batchSizeSlider is empty or undefined return all indices
+    // if (!batchSizeSlider || batchSizeSlider.value === 0) {
+    //     return [...Array(data.length).keys()];
+    // }
+
+    const batchSize = Math.ceil(data.length * batchSizePercentage / 100);
+    console.log(batchSize, data.length);
+    // sample without replacement
+    const possibleIdx = [...Array(data.length).keys()];
+    const idx = [];
+    for (let i = 0; i < batchSize; i++) {
+        const randomIdx = Math.floor(Math.random() * possibleIdx.length);
+        idx.push(possibleIdx[randomIdx]);
+        possibleIdx.splice(randomIdx, 1);
+    }
+    return idx;
+}
+
+
+let currentMinibatchIdx = minibatchidx(dummyData);
+
+
+function minibatch(data) {
+    // if currentMinibatchIdx is empty or undefined return the whole data
+    if (!currentMinibatchIdx || currentMinibatchIdx.length === 0) {
+        return data;
+    }
+
+    const batch = [];
+    for (let i = 0; i < currentMinibatchIdx.length; i++) {
+        batch.push(data[currentMinibatchIdx[i]]);
+    }
+    return batch;
+}
+
+
+let updateRate = 1;
+
+
 function drawArrow(p, base, vec, myColor) {
     p.push();
     p.stroke(myColor);
@@ -106,10 +150,16 @@ const parameterSpaceSketch = (p) => {
         p.createCanvas(width,width);
 
         // set frame rate to 30
-        p.frameRate(45);
+        p.frameRate(30);
     }
 
     p.draw = () => {
+        const updateFrame = p.frameCount % updateRate === 0;
+
+        if (updateFrame) {
+            currentMinibatchIdx = minibatchidx(dummyData);
+        }
+
         // lossToggle checkbox value
         const lossToggle = document.getElementById('lossToggle').checked;
         const gradientToggle = document.getElementById('gradientToggle').checked;
@@ -141,7 +191,7 @@ const parameterSpaceSketch = (p) => {
                 for (let j = 0; j < nSquares; j++) {
                     const slope = p.map(i, 0, nSquares, minParameters.slope, maxParameters.slope);
                     const intercept = p.map(j, 0, nSquares, maxParameters.intercept, minParameters.intercept);
-                    const error = errorFunction({ slope, intercept }, dummyData);
+                    const error = errorFunction({ slope, intercept }, minibatch(dummyData));
                     errors[i].push(error);
                     maxError = Math.max(maxError, error);
                     minError = Math.min(minError, error);
@@ -171,7 +221,7 @@ const parameterSpaceSketch = (p) => {
                 for (let j = 0; j < nSquares; j++) {
                     const slope = p.map(i, 0, nSquares, minParameters.slope, maxParameters.slope);
                     const intercept = p.map(j, 0, nSquares, maxParameters.intercept, minParameters.intercept);
-                    const gradient = aproxGradient({ slope, intercept }, dummyData, errorFunction);
+                    const gradient = aproxGradient({ slope, intercept }, minibatch(dummyData), errorFunction);
                     const gradientVector = p.createVector(gradient.slope, -gradient.intercept);
                     const squareCenter = p.createVector(i * squareSize + squareSize / 2, j * squareSize + squareSize / 2);
                     drawArrow(p, squareCenter, gradientVector.mult(10), p.color(0, 0, 0));
@@ -196,8 +246,8 @@ const parameterSpaceSketch = (p) => {
             optimizing = false;
         }
 
-        if (optimizing) {
-            const gradient = aproxGradient(parameters, dummyData, errorFunction);
+        if (optimizing && updateFrame) {
+            const gradient = aproxGradient(parameters, minibatch(dummyData), errorFunction);
             parameters.slope -= gradient.slope * learningRate;
             parameters.intercept -= gradient.intercept * learningRate;
             // if the parameters are out of bounds, set them to the bounds
@@ -238,7 +288,7 @@ const parameterSpaceSketch = (p) => {
         p.stroke(0);
         p.textSize(16);
         p.textAlign(p.LEFT, p.TOP);
-        p.text(`loss: ${errorFunction(parameters, dummyData).toFixed(2)}`, 10, 10);
+        p.text(`loss: ${errorFunction(parameters, minibatch(dummyData)).toFixed(2)}`, 10, 10);
 
 
     }
@@ -279,9 +329,22 @@ const dataSpaceSketch = (p) => {
             // set learning rate to be 10^(-learningRate)
             learningRate = Math.pow(10, learningRate);
             // update the learning rate label to show the new value
-            document.getElementById('learningRateLabel').innerHTML = `learning rate: ${learningRate.toFixed(4)}`;
+            document.getElementById('learningRateLabel').innerHTML = `Learning Rate: ${learningRate.toFixed(4)}`;
         }
 
+        // make the batch size slider update the batch size
+        document.getElementById('batchSize').oninput = () => {
+            batchSizePercentage = document.getElementById('batchSize').value;
+            // update the batch size label to show the new value
+            document.getElementById('batchSizeLabel').innerHTML = `Batch Size (percentage): ${batchSizePercentage}%`;
+        }
+
+        // make the update rate slider update the update rate
+        document.getElementById('updateRate').oninput = () => {
+            updateRate = document.getElementById('updateRate').value;
+            // update the update rate label to show the new value
+            document.getElementById('updateRateLabel').innerHTML = `Update every ${updateRate} frame(s)`;
+        }
     }
 
     p.draw = () => {
@@ -308,6 +371,23 @@ const dataSpaceSketch = (p) => {
             // use maxParameters and minParameters to map the data to the canvas
             p.point(p.map(x, minParameters.slope, maxParameters.slope, 0, p.width), p.map(y, maxParameters.intercept, minParameters.intercept, 0, p.height));
         }
+        // draw the current minibatch if the batch size is less than 100%
+        if (batchSizePercentage < 100) {
+            p.stroke(255, 0, 0);
+            p.strokeWeight(3);
+            p.fill(0);
+            const batch = minibatch(dummyData);
+            for (let i = 0; i < batch.length; i++) {
+                const { x, y } = batch[i];
+                p.ellipse(
+                    p.map(x, minParameters.slope, maxParameters.slope, 0, p.width),
+                    p.map(y, maxParameters.intercept, minParameters.intercept, 0, p.height),
+                    6,
+                    6
+                );
+            }
+        }
+
         // draw the line defined by the parameters
         p.stroke(255, 0, 0);
         p.strokeWeight(2);

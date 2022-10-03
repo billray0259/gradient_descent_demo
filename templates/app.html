@@ -41,7 +41,7 @@
 
                     <!-- Add toggles for "loss" and "gradient" -->
                     <div class="row">
-                        <div class="col">
+                        <div class="col mt-1">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="" id="lossToggle">
                                 <label class="form-check-label" for="lossToggle">
@@ -67,6 +67,15 @@
                                 <option value="mse">Mean Squared Error</option>
                                 <option value="huber">Huber Loss</option>
                             </select>
+                        </div>
+                    </div>
+                    <!-- Allow user to set the update rate with a slider -->
+                    <div class="row mt-3">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="updateRate" id="updateRateLabel">Update every 1 frame(s)</label>
+                                <input type="range" class="custom-range" id="updateRate" min="1" max="150" step="1" value="1">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,6 +112,16 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Allow the user to set the batch size as a percentage of the total data with a range input -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="batchSize" id="batchSizeLabel">Batch size (percentage): 100%</label>
+                                <input type="range" class="custom-range" id="batchSize" min="0" max="100" step="1" value="100">
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
             <!-- Add a row explaining what this demo is -->

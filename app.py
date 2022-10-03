@@ -1,6 +1,6 @@
 import flask
-# hello
 import sys
+from datetime import datetime
 
 debug = False
 
@@ -14,6 +14,10 @@ app = flask.Flask(__name__)
 
 @app.route('/')
 def index():
+
+    with open('access.log', 'a') as f:
+        f.write(f"{datetime.now()},{flask.request.remote_addr}\n")
+
     return flask.render_template('app.html')
 
 if __name__ == '__main__':
